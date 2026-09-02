@@ -156,17 +156,6 @@ select.input { cursor: pointer; }
 .garmin-btn { background: #1d2b3a; color: #fff; border: none; border-radius: var(--radius-sm); padding: 11px 16px; font-family: inherit; font-weight: 600; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.18s; }
 .garmin-btn:hover { background: #0f1e2d; }
 .garmin-btn:active { transform: scale(0.97); }
-.garmin-step { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
-.garmin-step:last-child { border-bottom: none; }
-.garmin-step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
-.garmin-step-text { font-size: 13px; color: var(--text2); line-height: 1.5; }
-.garmin-step-text strong { color: var(--text); }
-.garmin-json-box { background: #0f172a; border-radius: var(--radius-sm); padding: 12px; font-size: 11px; color: #7dd3fc; font-family: 'Courier New', monospace; overflow-x: auto; white-space: pre; max-height: 180px; overflow-y: auto; margin: 8px 0; line-height: 1.6; }
-.garmin-copy-btn { background: var(--bg3); border: 1px solid var(--border2); border-radius: 8px; padding: 8px 14px; font-size: 12px; font-weight: 600; color: var(--text2); cursor: pointer; transition: all 0.18s; display: flex; align-items: center; gap: 6px; }
-.garmin-copy-btn:hover { background: var(--border); }
-.tab-bar { display: flex; background: var(--bg3); border-radius: 10px; padding: 3px; margin-bottom: 14px; }
-.tab-bar .tb { flex: 1; padding: 7px; text-align: center; font-size: 12px; font-weight: 600; color: var(--text3); border-radius: 7px; cursor: pointer; transition: all 0.18s; }
-.tab-bar .tb.active { background: #fff; color: var(--accent); box-shadow: var(--shadow); }
 </style>
 </head>
 <body>
@@ -175,8 +164,8 @@ select.input { cursor: pointer; }
   <!-- ══ ONBOARDING ══════════════════════════════════════════════ -->
   <div id="screen-onboarding" class="screen active">
     <div class="onb-hero">
-      <div class="onb-logo">🌊 NadarFlow</div>
-      <div class="onb-tagline">Planilha de natação personalizada por nível.</div>
+      <div class="onb-logo">🌊 AquaFlow</div>
+      <div class="onb-tagline">Planilha de natação personalizada por nível</div>
     </div>
     <div class="onb-steps" id="onb-steps-bar">
       <!-- rendered by JS: 5 steps -->
@@ -329,9 +318,11 @@ select.input { cursor: pointer; }
       <div style="margin-bottom:10px;" id="home-level-chip-wrap"></div>
       <div class="section-title">Treino de hoje</div>
       <div class="card" id="home-today-card" style="cursor:pointer;border-color:#bae6fd;background:linear-gradient(135deg,#f0f9ff,#fff);" onclick="goToWorkout()">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;flex-wrap:wrap;gap:6px;">
           <span class="badge badge-blue" id="home-week-badge">Semana 1 · Dia 1</span>
-          <span class="badge" id="home-intensity-badge">Moderado</span>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
+            <span class="badge" id="home-intensity-badge">Moderado</span>
+          </div>
         </div>
         <div style="font-size:18px;font-weight:700;margin-bottom:4px;color:var(--text);" id="home-workout-title">Carregando...</div>
         <div style="font-size:13px;color:var(--text2);margin-bottom:14px;" id="home-workout-meta">— exercícios · — min</div>
@@ -353,6 +344,9 @@ select.input { cursor: pointer; }
         </div>
         <div id="home-today-btn">
           <button class="btn btn-primary btn-block" onclick="event.stopPropagation();goToWorkout()">Ver treino de hoje</button>
+        </div>
+        <div style="text-align:center;margin-top:10px;">
+          <span style="font-size:12px;color:var(--accent);font-weight:600;cursor:pointer;" onclick="event.stopPropagation();goToWorkout()">Ver próximos treinos da semana →</span>
         </div>
       </div>
     </div>
@@ -392,7 +386,7 @@ select.input { cursor: pointer; }
         <span style="font-size:12px;color:var(--text2);" id="ex-counter">Carregando…</span>
         <button class="garmin-btn" onclick="openGarminModal()" style="padding:8px 12px;font-size:12px;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 16v1a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Enviar ao Garmin
+          Enviar ao relógio
         </button>
       </div>
     </div>
@@ -401,6 +395,7 @@ select.input { cursor: pointer; }
       <div id="complete-btn-wrap" style="display:none;margin-top:14px;">
         <button class="btn btn-primary btn-block" onclick="completeWorkout()">🎉 Concluir treino</button>
       </div>
+      <div id="upcoming-sessions" style="margin-top:20px;"></div>
     </div>
   </div>
 
@@ -408,7 +403,7 @@ select.input { cursor: pointer; }
   <div id="screen-plans" class="screen">
     <div class="header">
       <div class="header-title">Planilhas</div>
-      <button class="btn btn-outline btn-sm" onclick="showGenModal()">+ Nova</button>
+      <button class="btn btn-outline btn-sm" onclick="startNewPlan()">+ Nova</button>
     </div>
     <div class="section" style="padding-top:16px;">
       <div class="section-title">Programa ativo</div>
@@ -449,7 +444,7 @@ select.input { cursor: pointer; }
         <div style="font-size:26px;margin-bottom:8px;">📋</div>
         <div style="font-size:15px;font-weight:700;margin-bottom:5px;">Nova planilha</div>
         <div style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6;">Crie um programa personalizado com base no seu perfil e nível atual</div>
-        <button class="btn btn-primary" onclick="showGenModal()">Criar planilha →</button>
+        <button class="btn btn-primary" onclick="startNewPlan()">Criar planilha →</button>
       </div>
     </div>
   </div>
@@ -558,6 +553,20 @@ select.input { cursor: pointer; }
   </div>
 </div>
 
+<!-- ══ PREVIEW MODAL (visualizar treino de outro dia) ═══════════ -->
+<div class="modal-overlay" id="preview-modal">
+  <div class="modal" style="max-height:85vh;overflow-y:auto;">
+    <div class="modal-handle"></div>
+    <div style="margin-bottom:6px;">
+      <span class="badge badge-blue" id="preview-week-badge">Semana 1 · Dia 1</span>
+    </div>
+    <div style="font-size:18px;font-weight:700;margin-bottom:4px;" id="preview-title">—</div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:14px;" id="preview-meta">—</div>
+    <div id="preview-exercise-list"></div>
+    <button class="btn btn-outline btn-block" onclick="closePreviewModal()" style="margin-top:16px;">Fechar</button>
+  </div>
+</div>
+
 <!-- ══ GARMIN MODAL ════════════════════════════════════════════ -->
 <div class="modal-overlay" id="garmin-modal">
   <div class="modal" style="max-height:85vh;overflow-y:auto;">
@@ -568,90 +577,32 @@ select.input { cursor: pointer; }
       </div>
       <div>
         <div style="font-size:16px;font-weight:700;">Enviar treino ao relógio</div>
-        <div style="font-size:12px;color:var(--text3);">intervals.icu, Garmin Connect ou manual</div>
+        <div style="font-size:12px;color:var(--text3);">via intervals.icu</div>
       </div>
     </div>
 
-    <div class="tab-bar">
-      <div class="tb active" onclick="switchGarminTab(this,'intervals')" id="gtab-intervals">intervals.icu</div>
-      <div class="tb" onclick="switchGarminTab(this,'api')" id="gtab-api">Garmin API</div>
-      <div class="tb" onclick="switchGarminTab(this,'json')" id="gtab-json">JSON</div>
-      <div class="tb" onclick="switchGarminTab(this,'manual')" id="gtab-manual">Manual</div>
+    <div class="info-box" style="margin-bottom:12px;">
+      <div class="info-box-icon">⚡</div>
+      <div class="info-box-text">O intervals.icu sincroniza com Garmin, Wahoo, Coros, Suunto, Polar e outros — configure a conexão com seu relógio uma vez lá no site deles, e todo treino enviado por aqui cai automaticamente nele.</div>
     </div>
-
-    <!-- TAB: INTERVALS.ICU -->
-    <div id="garmin-tab-intervals">
-      <div class="info-box" style="margin-bottom:12px;">
-        <div class="info-box-icon">⚡</div>
-        <div class="info-box-text">Envio direto e real — sem precisar de developer program. Se sua conta <strong>intervals.icu</strong> já estiver conectada ao Garmin Connect (configurado uma vez lá no site deles), o treino sincroniza sozinho pro relógio.</div>
-      </div>
-      <div class="input-wrap">
-        <div class="input-label">API Key do intervals.icu</div>
-        <input class="input" id="intervals-api-key" type="password" placeholder="Cole sua API Key" autocomplete="off">
-      </div>
-      <div class="input-wrap">
-        <div class="input-label">Athlete ID (opcional)</div>
-        <input class="input" id="intervals-athlete-id" placeholder="0 = sua própria conta">
-      </div>
-      <button class="btn btn-primary btn-block" id="intervals-send-btn" onclick="sendToIntervals()">🚀 Enviar treino de hoje</button>
-      <div style="font-size:11px;color:var(--text3);margin-top:10px;line-height:1.6;">
-        Pegue sua chave em <strong>intervals.icu → Configurações → Developer Settings</strong>. Ela fica salva só neste dispositivo (localStorage) e é usada apenas para falar direto com a API do intervals.icu — nenhum servidor intermediário.
+    <div class="input-wrap">
+      <div class="input-label">API Key do intervals.icu</div>
+      <input class="input" id="intervals-api-key" type="password" placeholder="Cole sua API Key" autocomplete="off">
+    </div>
+    <div class="input-wrap">
+      <div class="input-label">Athlete ID (opcional)</div>
+      <input class="input" id="intervals-athlete-id" placeholder="0 = sua própria conta">
+    </div>
+    <div class="input-wrap">
+      <div class="input-label">O que enviar</div>
+      <div style="display:flex;gap:8px;">
+        <span class="badge badge-blue" id="intervals-scope-today" style="cursor:pointer;padding:9px 14px;" onclick="setIntervalsScope('today')">Só hoje</span>
+        <span class="badge badge-gray" id="intervals-scope-week" style="cursor:pointer;padding:9px 14px;" onclick="setIntervalsScope('week')">Essa semana</span>
       </div>
     </div>
-
-    <!-- TAB: API -->
-    <div id="garmin-tab-api" style="display:none;">
-      <div class="info-box" style="margin-bottom:12px;">
-        <div class="info-box-icon">🔑</div>
-        <div class="info-box-text">Para envio automático, você precisa se cadastrar no <strong>Garmin Connect Developer Program</strong> e obter as credenciais OAuth.</div>
-      </div>
-      <div style="margin-bottom:12px;">
-        <div style="font-size:12px;font-weight:700;color:var(--text3);margin-bottom:8px;">PASSOS PARA ATIVAR</div>
-        <div class="garmin-step">
-          <div class="garmin-step-num">1</div>
-          <div class="garmin-step-text"><strong>Cadastre-se</strong> em <span style="color:var(--accent);">developer.garmin.com</span> e solicite acesso à Training API</div>
-        </div>
-        <div class="garmin-step">
-          <div class="garmin-step-num">2</div>
-          <div class="garmin-step-text"><strong>Adicione seu Client ID e Secret</strong> no código do app (variáveis GARMIN_CLIENT_ID e GARMIN_CLIENT_SECRET)</div>
-        </div>
-        <div class="garmin-step">
-          <div class="garmin-step-num">3</div>
-          <div class="garmin-step-text"><strong>Configure um backend</strong> (Vercel, Cloudflare Workers) para processar o OAuth com segurança</div>
-        </div>
-        <div class="garmin-step">
-          <div class="garmin-step-num">4</div>
-          <div class="garmin-step-text">O treino será enviado automaticamente ao <strong>calendário do Garmin Connect</strong> e sincronizado com o relógio</div>
-        </div>
-      </div>
-      <a href="https://developer.garmin.com/gc-developer-program/training-api/" target="_blank" class="btn btn-primary btn-block" style="text-decoration:none;justify-content:center;">
-        Acessar Developer Program →
-      </a>
-    </div>
-
-    <!-- TAB: JSON -->
-    <div id="garmin-tab-json" style="display:none;">
-      <div style="font-size:13px;color:var(--text2);margin-bottom:10px;">Copie o JSON abaixo — é o treino formatado no padrão da <strong>Garmin Training API</strong>. Quando tiver as credenciais, basta fazer um POST para <code style="background:var(--bg3);padding:2px 6px;border-radius:4px;font-size:11px;">/training-api/workout</code>.</div>
-      <div class="garmin-json-box" id="garmin-json-content">Carregando...</div>
-      <div style="display:flex;gap:8px;margin-top:8px;">
-        <button class="garmin-copy-btn" onclick="copyGarminJson(this)" style="flex:1;justify-content:center;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          Copiar JSON
-        </button>
-        <button class="garmin-copy-btn" onclick="downloadGarminJson()" style="flex:1;justify-content:center;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 16v1a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Baixar .json
-        </button>
-      </div>
-    </div>
-
-    <!-- TAB: MANUAL -->
-    <div id="garmin-tab-manual" style="display:none;">
-      <div style="font-size:13px;color:var(--text2);margin-bottom:12px;">Crie o treino manualmente no Garmin Connect — é gratuito e não precisa de API.</div>
-      <div id="garmin-manual-steps"></div>
-      <a href="https://connect.garmin.com/modern/workout/create/pool-swim" target="_blank" class="btn btn-primary btn-block" style="text-decoration:none;justify-content:center;margin-top:12px;">
-        Abrir Garmin Connect →
-      </a>
+    <button class="btn btn-primary btn-block" id="intervals-send-btn" onclick="sendToIntervals()">🚀 Enviar</button>
+    <div style="font-size:11px;color:var(--text3);margin-top:10px;line-height:1.6;">
+      Pegue sua chave em <strong>intervals.icu → Configurações → Developer Settings</strong>. Ela fica salva só neste dispositivo (localStorage) e é usada apenas para falar direto com a API do intervals.icu — nenhum servidor intermediário.
     </div>
 
     <button class="btn btn-outline btn-block" onclick="closeGarminModal()" style="margin-top:14px;">Fechar</button>
@@ -740,14 +691,14 @@ const LEVELS = {
     borderColor: '#fca5a5',
     badgeClass: 'badge-red',
     description: 'Treinamento de alto volume com intervalado, sprints e trabalho de limiar.',
-    volumeRange: [2500, 4500],
-    startVolume: 2800,
-    weeklyIncrease: 0.07,
+    volumeRange: [2000, 3400],
+    startVolume: 2000,
+    weeklyIncrease: 0.06,
     maxSessions: 6,
     intensityLabel: 'Intenso',
     intensityBadge: 'badge-red',
     planTitle: 'Alto Volume + Velocidade',
-    params: { drillLen:50, mainLen:200, speedLen:100, paceMin100:1.6 },
+    params: { drillLen:50, mainLen:200, speedLen:100, paceMin100:1.7 },
   },
 };
 
@@ -783,13 +734,26 @@ function classifyAthlete(lastSwam, capacity) {
   return 'beginner'; // fallback seguro
 }
 
-// Volume-alvo da sessão considerando a semana atual (progressão exponencial).
-// É o INSUMO do motor de treino — não é mais exibido direto na tela;
-// quem aparece na UI é sempre a soma real dos exercícios gerados.
+// Semana de recuperação (deload): toda 4ª semana o volume cai de
+// propósito — padrão clássico de periodização "3 semanas construindo
+// + 1 de recuperação", presente em praticamente todo modelo de
+// treinador (linear, ondulatório ou em blocos). Sem isso, 8 semanas
+// seguidas de volume só crescendo é receita pra estagnação/lesão.
+function isDeloadWeek(weekNum) {
+  return weekNum % 4 === 0;
+}
+
+// Volume-alvo da sessão considerando a semana atual (progressão exponencial
+// com deload embutido). É o INSUMO do motor de treino — não é mais exibido
+// direto na tela; quem aparece na UI é sempre a soma real dos exercícios gerados.
 function calcTargetVolume(levelKey, weekNum) {
   const lvl = LEVELS[levelKey];
-  const increase = Math.pow(1 + lvl.weeklyIncrease, weekNum - 1);
-  const vol = Math.round(lvl.startVolume * increase);
+  // Índice de progressão "real": semanas de deload não avançam a curva,
+  // só ficam mais leves em cima do índice da última semana de construção.
+  const buildIndex = weekNum - Math.floor(weekNum / 4);
+  const increase = Math.pow(1 + lvl.weeklyIncrease, buildIndex - 1);
+  let vol = lvl.startVolume * increase;
+  if (isDeloadWeek(weekNum)) vol *= 0.75; // ~25% a menos pra assimilar a carga
   const snapped = Math.round(vol / 25) * 25; // snap a 25m (tamanho de raia)
   return Math.min(snapped, lvl.volumeRange[1]);
 }
@@ -926,18 +890,34 @@ const PHASE_COLORS = {
   cooldown: { pc:'#f3e8ff', pt:'#7c3aed' },
 };
 
-const DRILL_NAMES = {
-  readaptation: 'Respiração e flutuação com prancha',
-  beginner:     'Pernada de crawl com prancha',
-  intermediate: 'Braçada unilateral (catch-up)',
-  advanced:     'Drill catch-up + rolamento de quadril',
+// Variedade de nomes/estilos — em vez de um texto fixo por nível pra
+// sempre, cada fase tem um pool de variações (nível avançado já inclui
+// outros estilos além de crawl; níveis mais fracos ficam só no crawl
+// de propósito, porque introduzir estilo novo antes da base estar
+// sólida é phase errada pra readaptação/iniciante).
+const WARMUP_NAME_OPTIONS = {
+  readaptation: ['Adaptação: entrada e flutuação', 'Adaptação: respiração e deslize lateral', 'Adaptação: flutuação dorsal + chute leve'],
+  beginner:     ['Crawl contínuo bem leve', 'Crawl com respiração bilateral, bem leve', 'Crawl + pernada solta intercalada'],
+  intermediate: ['Livre contínuo, respiração bilateral', 'Livre + costas alternado', 'Livre progressivo (começa fácil, fecha em ritmo)'],
+  advanced:     ['Misto contínuo (crawl/costas/peito)', 'Misto completo (4 estilos)', 'Livre longo + técnica de rolamento'],
 };
-const WARMUP_NAMES = {
-  readaptation: 'Adaptação: entrada e flutuação',
-  beginner:     'Crawl contínuo bem leve',
-  intermediate: 'Livre contínuo, respiração bilateral',
-  advanced:     'Misto contínuo (crawl/costas/peito)',
+const DRILL_NAME_OPTIONS = {
+  readaptation: ['Respiração e flutuação com prancha', 'Flutuação dorsal + chute leve', 'Deslize e recuperação de braço'],
+  beginner:     ['Pernada de crawl com prancha', 'Respiração bilateral com prancha', 'Pernada de costas com prancha'],
+  intermediate: ['Braçada unilateral (catch-up)', 'Drill de rolamento de quadril', 'Zip drill (cotovelo alto)', 'Pernada de peito isolada'],
+  advanced:     ['Drill catch-up + rolamento de quadril', 'Drill de ondulação (kick de borboleta)', 'Pernada de costas veloz', 'Respiração controlada a cada 5 braçadas'],
 };
+const COOLDOWN_NAME_OPTIONS = {
+  readaptation: ['Nado costas bem solto', 'Flutuação livre + respiração'],
+  beginner:     ['Nado livre bem solto', 'Nado costas solto'],
+  intermediate: ['Nado livre solto', 'Nado costas solto', 'Nado alternado (livre/costas) solto'],
+  advanced:     ['Nado livre solto', 'Nado costas solto', 'Nado peito bem leve', 'Nado alternado solto'],
+};
+function pickVariant(options, seed) {
+  if (!options || !options.length) return '';
+  const i = ((seed % options.length) + options.length) % options.length;
+  return options[i];
+}
 
 // Especificação do bloco Principal por método — cada método usa uma
 // zona de treino diferente (ritmo em relação ao pace-base do nível
@@ -983,18 +963,67 @@ function speedSetSpec(levelKey, methodKey, P) {
   }
 }
 
+// ═══════════════════════════════════════════════════════════════
+// MICROCICLO SEMANAL
+// Nenhum treinador de verdade repete o mesmíssimo treino em todas as
+// sessões da semana — o padrão universal é alternar o foco: um dia
+// de resistência aeróbica, um de técnica, um de qualidade (o método
+// "principal" escolhido no onboarding). Aqui isso vira uma rotação
+// de até 6 dias que se repete conforme o nº de treinos/semana.
+// Em semana de deload, todo dia vira aeróbico/técnico — sem sessão
+// de qualidade, porque deload também é sobre reduzir intensidade,
+// não só volume.
+// ═══════════════════════════════════════════════════════════════
+const WEEK_SLOT_PATTERN = ['aerobico', 'tecnica', 'qualidade', 'aerobico', 'qualidade', 'tecnica'];
+const SLOT_LABELS = { aerobico: 'Dia de Resistência', tecnica: 'Dia de Técnica', qualidade: 'Dia de Qualidade' };
+// Metadados de como explicar cada tipo de dia na UI — o objetivo é deixar
+// claro pro usuário QUANDO o método escolhido por ele realmente entra em
+// jogo. Dias "fixo" seguem sempre o mesmo foco (resistência/técnica),
+// independente do método selecionado no onboarding/planilhas; só o dia
+// de "qualidade" usa o método escolhido de fato.
+const DAY_SLOT_META = {
+  aerobico:  { tag: '🔁 Dia fixo', badgeClass: 'badge-gray', note: 'Foco fixo em resistência aeróbica — não muda com o método que você escolheu.' },
+  tecnica:   { tag: '🔁 Dia fixo', badgeClass: 'badge-gray', note: 'Foco fixo em técnica/educativos — não muda com o método que você escolheu.' },
+  qualidade: { tag: '🎯 Dia de Qualidade', badgeClass: 'badge-blue', note: 'Aqui entra o método que você escolheu.' },
+  deload:    { tag: '😌 Recuperação', badgeClass: 'badge-teal', note: 'Semana de assimilação — intensidade reduzida em todos os dias, sem sessão de qualidade.' },
+};
+
+function buildWeekTemplate(levelKey, chosenMethodKey) {
+  const avail = getMethodsForLevel(levelKey).map(m => m.key);
+  const techKey = avail.includes('tecnica_total') ? 'tecnica_total' : 'base_aerobica';
+  const qualityKey = (avail.includes(chosenMethodKey) && chosenMethodKey !== 'tecnica_total')
+    ? chosenMethodKey
+    : (avail.find(k => k !== 'tecnica_total') || 'base_aerobica');
+  const slotToMethod = { aerobico: 'base_aerobica', tecnica: techKey, qualidade: qualityKey };
+  return WEEK_SLOT_PATTERN.map(slot => ({ methodKey: slotToMethod[slot], dayLabel: SLOT_LABELS[slot], slot }));
+}
+
 // Monta a planilha real do dia: warmup → educativo → principal → velocidade → soltura.
 // Volume e duração exibidos vêm sempre da SOMA desses blocos — sem
 // divergência entre o que a tela promete e o que está na planilha.
-function generateWorkout(levelKey, methodKey, weekNum, poolSize) {
+function generateWorkout(levelKey, methodKey, weekNum, poolSize, dayNum, sessionsWeek) {
   const lvl = LEVELS[levelKey] || LEVELS.intermediate;
   const validMethods = getMethodsForLevel(levelKey);
-  const method = (METHODS[methodKey] && validMethods.some(m => m.key === methodKey))
+  const chosenMethod = (METHODS[methodKey] && validMethods.some(m => m.key === methodKey))
     ? METHODS[methodKey] : validMethods[0];
+
+  // Qual o foco de HOJE, dentro da semana (varia por dia; some CSS/USRPT/
+  // polarizado em semana de deload — só aeróbico/técnica nessas semanas)
+  const deload = isDeloadWeek(weekNum);
+  const template = buildWeekTemplate(levelKey, chosenMethod.key);
+  const dIdx = Math.max(1, dayNum || 1) - 1;
+  let daySlot = template[dIdx % template.length];
+  if (deload) {
+    const techAvailable = validMethods.some(m => m.key === 'tecnica_total');
+    daySlot = { methodKey: (dIdx % 2 === 1 && techAvailable) ? 'tecnica_total' : 'base_aerobica', dayLabel: 'Recuperação', slot: 'deload' };
+  }
+  const todaysMethod = METHODS[daySlot.methodKey];
+
   const P = lvl.params;
   const pool = poolSize || 25;
   const targetVol = calcTargetVolume(levelKey, weekNum);
-  const w = method.weights;
+  const w = todaysMethod.weights;
+  const seed = (weekNum - 1) * 7 + dIdx; // varia dia a dia e semana a semana
 
   const distWarmup   = roundToPool(targetVol * w.warmup, pool);
   const distDrill     = roundToPool(targetVol * w.drill, pool);
@@ -1007,28 +1036,30 @@ function generateWorkout(levelKey, methodKey, weekNum, poolSize) {
 
   // 1. Aquecimento — nado contínuo, ritmo levemente mais fácil que o pace-base
   blocks.push(makeContinuousBlock(id++, 'Aquecimento', PHASE_COLORS.warmup.pc, PHASE_COLORS.warmup.pt,
-    WARMUP_NAMES[levelKey], distWarmup, P.paceMin100, 1.10,
+    pickVariant(WARMUP_NAME_OPTIONS[levelKey], seed), distWarmup, P.paceMin100, 1.10,
     'Ritmo bem leve, só pra ligar o corpo e a respiração.', 'Aeróbico fácil'));
 
   // 2. Educativo/Drill — pace não importa, o que importa é execução; descanso generoso
   const drillRepLen = Math.max(pool, Math.round(P.drillLen / pool) * pool);
   const drillReps = Math.max(1, Math.round(distDrill / drillRepLen));
-  blocks.push(makeRepBlock(id++, method.key === 'tecnica_total' ? 'Educativo (foco do treino)' : 'Educativo',
-    PHASE_COLORS.drill.pc, PHASE_COLORS.drill.pt, DRILL_NAMES[levelKey],
+  blocks.push(makeRepBlock(id++, todaysMethod.key === 'tecnica_total' ? 'Educativo (foco do treino)' : 'Educativo',
+    PHASE_COLORS.drill.pc, PHASE_COLORS.drill.pt, pickVariant(DRILL_NAME_OPTIONS[levelKey], seed + 1),
     drillReps, drillRepLen, P.paceMin100, 1.35, 0.6,
     'Foque na execução, não na velocidade.', 'Técnica'));
 
-  // 3. Principal — zona definida pelo método
-  const mainSpec = mainSetSpec(levelKey, method.key, P);
+  // 3. Principal — zona definida pelo foco do dia
+  const mainSpec = mainSetSpec(levelKey, todaysMethod.key, P);
   const mainRepLen = Math.max(pool, Math.round(mainSpec.repLen / pool) * pool);
   const mainReps = Math.max(1, Math.round(distMain / mainRepLen));
   blocks.push(makeRepBlock(id++, 'Principal', PHASE_COLORS.main.pc, PHASE_COLORS.main.pt,
     mainSpec.name, mainReps, mainRepLen, P.paceMin100, mainSpec.paceMult, mainSpec.restRatio,
     mainSpec.tip, mainSpec.zoneLabel));
 
-  // 4. Velocidade (só entra se sobrar volume suficiente pra pelo menos 1 raia)
-  if (distSpeed >= pool) {
-    const speedSpec = speedSetSpec(levelKey, method.key, P);
+  // 4. Velocidade (só entra se sobrar volume suficiente pra pelo menos 1 raia,
+  // e nunca em semana de deload — reduzir intensidade também é parte do descanso;
+  // o volume que iria pra velocidade é redistribuído pra soltura nesse caso)
+  if (distSpeed >= pool && !deload) {
+    const speedSpec = speedSetSpec(levelKey, todaysMethod.key, P);
     const speedRepLen = Math.max(pool, Math.round(speedSpec.repLen / pool) * pool);
     const speedReps = Math.max(1, Math.round(distSpeed / speedRepLen));
     blocks.push(makeRepBlock(id++, 'Velocidade', PHASE_COLORS.speed.pc, PHASE_COLORS.speed.pt,
@@ -1036,21 +1067,50 @@ function generateWorkout(levelKey, methodKey, weekNum, poolSize) {
       speedSpec.tip, speedSpec.zoneLabel));
   }
 
-  // 5. Soltura — nado contínuo, bem fácil
+  // 5. Soltura — nado contínuo, bem fácil (absorve o volume de velocidade em deload)
+  const cooldownExtra = (deload && distSpeed >= pool) ? distSpeed : 0;
   blocks.push(makeContinuousBlock(id++, 'Soltura', PHASE_COLORS.cooldown.pc, PHASE_COLORS.cooldown.pt,
-    'Nado livre solto', distCooldown, P.paceMin100, 1.15,
+    pickVariant(COOLDOWN_NAME_OPTIONS[levelKey], seed + 2), distCooldown + cooldownExtra, P.paceMin100, 1.15,
     'Sem cronômetro — só relaxar e respirar fundo.', 'Recuperação'));
 
   const totalVolume = blocks.reduce((s, b) => s + b.totalMeters, 0);
   const totalTimeSec = blocks.reduce((s, b) => s + b.totalTimeSec, 0);
   const durationMin = Math.max(15, Math.round(totalTimeSec / 60));
 
-  return { exercises: blocks, totalVolume, durationMin, method, targetVol };
+  return {
+    exercises: blocks, totalVolume, durationMin, targetVol,
+    method: todaysMethod,       // método de HOJE (pode ser diferente do escolhido, por causa do microciclo/deload)
+    chosenMethod,                // método "principal" escolhido no onboarding/planilhas
+    dayLabel: daySlot.dayLabel,
+    daySlotType: daySlot.slot,   // 'aerobico' | 'tecnica' | 'qualidade' | 'deload' — pra UI explicar quando o método escolhido entra
+    isDeload: deload,
+  };
 }
 
 // Atalho: pega o treino do dia com base no estado atual do app
 function getTodayWorkout() {
-  return generateWorkout(S.athleteLevel, S.trainingMethod, S.weekNum, S.poolSize);
+  return generateWorkout(S.athleteLevel, S.trainingMethod, S.weekNum, S.poolSize, S.dayNum, S.sessionsWeek);
+}
+
+// Projeta os próximos N treinos a partir de hoje (sem alterar o estado real).
+// Como o app não sabe em quais dias da semana a pessoa treina, distribui as
+// sessões de forma espaçada e uniforme dentro da semana (7 ÷ treinos/semana),
+// só pra dar uma data plausível — a 1ª sessão projetada é sempre "hoje".
+function computeUpcomingSessions(n) {
+  const results = [];
+  let wk = S.weekNum, dn = S.dayNum;
+  const sessionsWeek = S.sessionsWeek || 3;
+  const gapDays = Math.max(1, Math.round(7 / sessionsWeek));
+  for (let i = 0; i < n && wk <= 8; i++) {
+    const workout = generateWorkout(S.athleteLevel, S.trainingMethod, wk, S.poolSize, dn, sessionsWeek);
+    const date = new Date();
+    date.setDate(date.getDate() + i * gapDays);
+    date.setHours(7, 0, 0, 0); // horário padrão de treino — evita agendar pra 23h só porque foi quando a pessoa mexeu no app
+    results.push({ weekNum: wk, dayNum: dn, date, workout });
+    dn++;
+    if (dn > sessionsWeek) { dn = 1; wk++; }
+  }
+  return results;
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1069,6 +1129,7 @@ const S = {
   weekNum:      load('weekNum',1),
   dayNum:       load('dayNum',1),
   totalInPlan:  load('totalInPlan',24),
+  planStartedAt: load('planStartedAt', new Date().toISOString()),
   workouts:     load('workouts',[]),
   intervalsApiKey:    load('intervalsApiKey',''),
   intervalsAthleteId: load('intervalsAthleteId','0'),
@@ -1081,6 +1142,7 @@ const S = {
   _capacity: null,
   _goal: null,
   _method: null,
+  _level: null, // nível escolhido no passo 5 (começa = sugestão do algoritmo, editável)
 };
 
 // ═══════════════════════════════════════════════════════════════
@@ -1127,6 +1189,47 @@ function initOnbSteps(){
   ).join('');
 }
 
+// ═══════════════════════════════════════════════════════════════
+// NOVA PLANILHA
+// Só existe UM plano atual por vez. Gerar um novo sempre passa pelo
+// questionário completo de novo (objetivo, nível, método...) — nunca
+// só reabre o mesmo plano com uma animação por cima. Se já existe um
+// plano em andamento, confirma antes de substituir (o progresso desse
+// plano zera; o histórico/streak/km total continuam contando).
+// ═══════════════════════════════════════════════════════════════
+function startNewPlan(){
+  const hasPlan = load('onboardingDone', false);
+  if (hasPlan) {
+    const inProgress = S.workouts.some(w => new Date(w.date) >= new Date(S.planStartedAt));
+    const msg = inProgress
+      ? `Isso substitui sua planilha atual ("${S.planName}") por uma nova. O progresso desse plano (semana ${S.weekNum} de 8) será reiniciado — seu histórico de treinos e conquistas continuam contando normalmente. Quer continuar?`
+      : `Isso substitui sua planilha atual ("${S.planName}") por uma nova. Quer continuar?`;
+    if (!confirm(msg)) return;
+  }
+
+  // reseta as escolhas temporárias do onboarding — nada de reaproveitar
+  // objetivo/nível antigo por engano
+  S._lastSwam = null; S._capacity = null; S._goal = null; S._method = null; S._level = null;
+
+  // volta a UI do onboarding pro passo 1, limpo
+  for (let i=1;i<=ONB_TOTAL;i++){
+    const el = document.getElementById('onb-step-'+i);
+    if (el) el.style.display = (i===1) ? 'block' : 'none';
+    const dot = document.getElementById('ostep'+i);
+    if (dot) { dot.classList.remove('active','done'); if (i===1) dot.classList.add('active'); }
+  }
+  document.querySelectorAll('#screen-onboarding .opt-card, #screen-onboarding .opt-card-row').forEach(c=>c.classList.remove('selected'));
+  const nameInput = document.getElementById('inp-name');
+  if (nameInput) nameInput.value = S.name || '';
+
+  // troca de tela: some com a ativa, mostra o onboarding do zero
+  const cur = document.querySelector('.screen.active');
+  if (cur) cur.classList.remove('active');
+  const onb = document.getElementById('screen-onboarding');
+  onb.classList.add('active');
+  onb.scrollTop = 0;
+}
+
 function selectOpt(el, key, val){
   // Handle both opt-card and opt-card-row
   const parent=el.parentElement;
@@ -1156,20 +1259,49 @@ function nextOnbStep(step){
   document.getElementById('screen-onboarding').scrollTop=0;
 }
 
+// Nível é SUGERIDO pelo algoritmo (com base em pausa + capacidade atual),
+// mas a palavra final é da pessoa — capacidade de nadar X metros não
+// necessariamente reflete o nível técnico/intensidade certos pra ela.
+// S._level guarda a escolha atual (começa igual à sugestão, mas é editável).
 function renderLevelPreview(){
-  const levelKey = classifyAthlete(S._lastSwam, S._capacity);
-  const lvl = LEVELS[levelKey];
+  const detectedKey = classifyAthlete(S._lastSwam, S._capacity);
+  if (!S._level) S._level = detectedKey; // só define a sugestão como ponto de partida na 1ª vez
+  renderLevelCard(detectedKey, S._level);
+}
+
+function selectLevel(key){
+  const detectedKey = classifyAthlete(S._lastSwam, S._capacity);
+  S._level = key;
+  renderLevelCard(detectedKey, key);
+}
+
+function renderLevelCard(detectedKey, selectedKey){
+  const lvl = LEVELS[selectedKey];
   const startVol = lvl.startVolume;
-  const week4Vol = calcTargetVolume(levelKey, 4);
-  const week8Vol = calcTargetVolume(levelKey, 8);
+  const week3Vol = calcTargetVolume(selectedKey, 3); // pico antes da 1ª recuperação
+  const week7Vol = calcTargetVolume(selectedKey, 7); // pico antes da 2ª recuperação
+  const isOverride = selectedKey !== detectedKey;
 
   const preview = document.getElementById('level-result-preview');
   preview.innerHTML = `
+    <div style="margin-bottom:14px;">
+      <div class="input-label" style="margin-bottom:8px;">Qual é o seu nível?</div>
+      <div class="opt-grid" style="margin-bottom:6px;">
+        ${Object.values(LEVELS).map(l => `
+          <div class="opt-card" style="position:relative;${l.key===selectedKey?`border-color:${l.color};background:${l.bgColor};`:''}" onclick="selectLevel('${l.key}')">
+            ${l.key===detectedKey?`<div style="position:absolute;top:8px;right:8px;font-size:9px;font-weight:700;color:${l.color};background:#fff;padding:2px 7px;border-radius:99px;border:1px solid ${l.borderColor};">sugerido</div>`:''}
+            <div class="opt-icon">${l.emoji}</div>
+            <div class="opt-name">${l.label}</div>
+            <div class="opt-desc">${l.intensityLabel}</div>
+          </div>`).join('')}
+      </div>
+      <div style="font-size:11px;color:var(--text3);line-height:1.5;">Com base nas suas respostas, o nível sugerido é <strong>${LEVELS[detectedKey].label}</strong>${isOverride?` — você selecionou <strong style="color:${lvl.color};">${lvl.label}</strong> manualmente.`:'. Pode trocar acima se achar que não bateu com sua realidade.'}</div>
+    </div>
     <div class="level-result-card" style="background:${lvl.bgColor};border-color:${lvl.borderColor};">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
         <div style="font-size:28px;">${lvl.emoji}</div>
         <div>
-          <div style="font-size:11px;font-weight:700;color:${lvl.color};text-transform:uppercase;letter-spacing:0.05em;">Seu nível detectado</div>
+          <div style="font-size:11px;font-weight:700;color:${lvl.color};text-transform:uppercase;letter-spacing:0.05em;">Nível selecionado</div>
           <div style="font-size:18px;font-weight:700;color:${lvl.color};">${lvl.label}</div>
         </div>
       </div>
@@ -1180,22 +1312,22 @@ function renderLevelPreview(){
           <div style="font-size:9px;color:#64748b;font-weight:600;">1ª SESSÃO</div>
         </div>
         <div style="background:rgba(255,255,255,0.7);border-radius:8px;padding:9px;text-align:center;">
-          <div style="font-size:14px;font-weight:700;color:${lvl.color};">${week4Vol}m</div>
-          <div style="font-size:9px;color:#64748b;font-weight:600;">SEM. 4</div>
+          <div style="font-size:14px;font-weight:700;color:${lvl.color};">${week3Vol}m</div>
+          <div style="font-size:9px;color:#64748b;font-weight:600;">PICO SEM. 3</div>
         </div>
         <div style="background:rgba(255,255,255,0.7);border-radius:8px;padding:9px;text-align:center;">
-          <div style="font-size:14px;font-weight:700;color:${lvl.color};">${week8Vol}m</div>
-          <div style="font-size:9px;color:#64748b;font-weight:600;">SEM. 8</div>
+          <div style="font-size:14px;font-weight:700;color:${lvl.color};">${week7Vol}m</div>
+          <div style="font-size:9px;color:#64748b;font-weight:600;">PICO SEM. 7</div>
         </div>
       </div>
     </div>
     <div class="info-box">
       <div class="info-box-icon">💡</div>
-      <div class="info-box-text">O volume aumenta <strong>~${Math.round(lvl.weeklyIncrease*100)}% por semana</strong> de forma progressiva, e os exercícios de cada treino escalam junto — não é só o número que cresce.</div>
+      <div class="info-box-text">O volume sobe <strong>~${Math.round(lvl.weeklyIncrease*100)}% por semana</strong>, com uma <strong>semana de recuperação a cada 4</strong> (semanas 4 e 8, volume ~25% menor de propósito) — o mesmo ciclo "construir e assimilar" que treinador nenhum pula. Os exercícios de cada treino escalam junto, e variam de dia pra dia dentro da semana.</div>
     </div>
   `;
 
-  renderMethodOptions(levelKey);
+  renderMethodOptions(selectedKey);
 }
 
 function renderMethodOptions(levelKey){
@@ -1228,7 +1360,9 @@ function selectMethod(el, methodKey){
 
 function startGenerate(){
   const name=document.getElementById('inp-name').value.trim()||'Atleta';
-  const levelKey = classifyAthlete(S._lastSwam||S.lastSwam, S._capacity||S.capacity);
+  // Usa o nível ESCOLHIDO pela pessoa (que começa igual à sugestão do
+  // algoritmo, mas pode ter sido trocado manualmente no passo 5).
+  const levelKey = S._level || classifyAthlete(S._lastSwam||S.lastSwam, S._capacity||S.capacity);
   const validMethods = getMethodsForLevel(levelKey);
   const methodKey = validMethods.some(m=>m.key===S._method) ? S._method : validMethods[0].key;
 
@@ -1242,6 +1376,7 @@ function startGenerate(){
   S.sessionsWeek=+document.getElementById('inp-sessions').value;
   S.weekNum=1; S.dayNum=1;
   S.totalInPlan=8*S.sessionsWeek;
+  S.planStartedAt=new Date().toISOString();
   const goalNames={conditioning:'Condicionamento',technique:'Técnica',endurance:'Resistência',speed:'Velocidade'};
   S.planName=LEVELS[levelKey].planTitle+' · '+(goalNames[S.goal]||'Geral')+' 8 Semanas';
 
@@ -1249,7 +1384,7 @@ function startGenerate(){
   save('athleteLevel',S.athleteLevel); save('trainingMethod',S.trainingMethod); save('goal',S.goal);
   save('poolSize',S.poolSize); save('sessionsWeek',S.sessionsWeek);
   save('weekNum',S.weekNum); save('dayNum',S.dayNum);
-  save('totalInPlan',S.totalInPlan); save('planName',S.planName);
+  save('totalInPlan',S.totalInPlan); save('planName',S.planName); save('planStartedAt',S.planStartedAt);
   save('onboardingDone',true);
   showGenModal();
 }
@@ -1307,11 +1442,26 @@ function renderHome(){
   document.getElementById('home-ex-count').textContent=exCount;
   document.getElementById('home-duration').textContent=workout.durationMin;
   document.getElementById('home-workout-meta').textContent=`${exCount} exercícios · ${workout.durationMin} min`;
-  document.getElementById('home-workout-title').textContent=lvl.planTitle;
+  document.getElementById('home-workout-title').textContent = workout.isDeload
+    ? `${lvl.planTitle} · Semana de Recuperação`
+    : `${lvl.planTitle} · ${workout.dayLabel}`;
 
   const intBadge=document.getElementById('home-intensity-badge');
-  intBadge.textContent=lvl.intensityLabel;
-  intBadge.className='badge '+lvl.intensityBadge;
+  intBadge.textContent=(workout.isDeload?'😌 ':'')+workout.dayLabel;
+  intBadge.className='badge '+(workout.isDeload?'badge-teal':lvl.intensityBadge);
+
+  // Tag extra: deixa claro se hoje é dia "fixo" ou o "dia de qualidade"
+  // (onde o método escolhido entra de verdade)
+  let slotTag = document.getElementById('home-slot-tag');
+  if (!slotTag) {
+    slotTag = document.createElement('span');
+    slotTag.id = 'home-slot-tag';
+    slotTag.style.marginLeft = '6px';
+    intBadge.insertAdjacentElement('afterend', slotTag);
+  }
+  const slotMeta = DAY_SLOT_META[workout.daySlotType] || DAY_SLOT_META.aerobico;
+  slotTag.className = 'badge ' + slotMeta.badgeClass;
+  slotTag.textContent = slotMeta.tag;
 
   // Week days
   const days=['S','T','Q','Q','S','S','D'];
@@ -1361,16 +1511,38 @@ function renderHome(){
 // ═══════════════════════════════════════════════════════════════
 function renderWorkout(){
   const lvl=LEVELS[S.athleteLevel]||LEVELS.intermediate;
-  const method=METHODS[S.trainingMethod]||METHODS.base_aerobica;
   const workout = getTodayWorkout();
 
   document.getElementById('wo-week-badge').textContent=`Semana ${S.weekNum} · Dia ${S.dayNum}`;
-  document.getElementById('wo-title').textContent=lvl.planTitle;
-  document.getElementById('wo-meta').textContent=`${workout.totalVolume.toLocaleString('pt-BR')}m · ${workout.durationMin} min · Piscina ${S.poolSize}m · ${method.icon} ${method.label}`;
+  document.getElementById('wo-title').textContent=`${lvl.planTitle} · ${workout.dayLabel}`;
+  document.getElementById('wo-meta').textContent=`${workout.totalVolume.toLocaleString('pt-BR')}m · ${workout.durationMin} min · Piscina ${S.poolSize}m · ${workout.method.icon} ${workout.method.label}`
+    + (workout.isDeload ? ' · 😌 semana de recuperação (volume reduzido de propósito)' : '');
 
   const woBadge=document.getElementById('wo-level-badge');
   woBadge.textContent=lvl.emoji+' '+lvl.label;
-  woBadge.className='badge '+lvl.intensityBadge;
+  woBadge.className='badge '+(workout.isDeload?'badge-teal':lvl.intensityBadge);
+
+  // Explica de forma explícita se HOJE é um dia "fixo" (resistência/técnica,
+  // sempre igual não importa o método) ou o "dia de qualidade" (onde o
+  // método escolhido pela pessoa realmente entra) — pra não parecer que a
+  // escolha de método não fez diferença nenhuma.
+  const slotMeta = DAY_SLOT_META[workout.daySlotType] || DAY_SLOT_META.aerobico;
+  let slotBox = document.getElementById('wo-slot-explainer');
+  if (!slotBox) {
+    slotBox = document.createElement('div');
+    slotBox.id = 'wo-slot-explainer';
+    slotBox.className = 'info-box';
+    slotBox.style.marginTop = '10px';
+    slotBox.style.marginBottom = '0';
+    document.querySelector('.workout-hero').appendChild(slotBox);
+  }
+  const slotNote = workout.daySlotType === 'qualidade'
+    ? `${slotMeta.note} Método de hoje: <strong>${workout.method.icon} ${workout.method.label}</strong>.`
+    : slotMeta.note;
+  slotBox.innerHTML = `
+    <div class="info-box-icon">${workout.daySlotType==='qualidade'?'🎯':workout.daySlotType==='deload'?'😌':'🔁'}</div>
+    <div class="info-box-text"><strong>${slotMeta.tag.replace(/^[^ ]+ /,'')}</strong> — ${slotNote}</div>
+  `;
 
   document.getElementById('exercise-list').innerHTML=workout.exercises.map(ex=>`
     <div class="exercise-item">
@@ -1386,6 +1558,94 @@ function renderWorkout(){
     </div>`).join('');
   document.getElementById('ex-counter').textContent=workout.exercises.length+' etapas · só visualização';
   document.getElementById('complete-btn-wrap').style.display='block';
+
+  // Próximos treinos — pra dar visibilidade do que vem depois de hoje.
+  // Mostra ~2 semanas à frente, agrupadas, pra não depender só do relógio pra ver o plano.
+  const upcoming = computeUpcomingSessions(1 + S.sessionsWeek * 2).slice(1); // pula índice 0 (hoje, já mostrado acima)
+  const dowNames=['dom','seg','ter','qua','qui','sex','sáb'];
+  const upWrap = document.getElementById('upcoming-sessions');
+  if (upcoming.length) {
+    // agrupa por semana pra ficar fácil de escanear
+    const byWeek = {};
+    upcoming.forEach(u => { (byWeek[u.weekNum] = byWeek[u.weekNum] || []).push(u); });
+    const weekKeys = Object.keys(byWeek).sort((a,b)=>a-b);
+
+    upWrap.innerHTML = `
+      <div class="section-title">Próximos treinos</div>
+      ${weekKeys.map(wk => `
+        <div style="font-size:11px;font-weight:700;color:var(--text3);margin:10px 0 6px;">SEMANA ${wk}</div>
+        <div class="card" style="margin-bottom:4px;">
+          ${byWeek[wk].map((u,i,arr)=>{
+            const dowLabel = dowNames[u.date.getDay()];
+            const w = u.workout;
+            const slotMeta = DAY_SLOT_META[w.daySlotType] || DAY_SLOT_META.aerobico;
+            const slotIcon = w.daySlotType==='qualidade'?'🎯':w.daySlotType==='deload'?'😌':'🔁';
+            return `<div style="display:flex;align-items:center;gap:12px;padding:${i>0?'10px 0':'0 0 10px'};${i<arr.length-1?'border-bottom:1px solid var(--border);':''}cursor:pointer;" onclick="previewSession(${u.weekNum},${u.dayNum})">
+              <div style="text-align:center;min-width:34px;">
+                <div style="font-size:10px;color:var(--text3);font-weight:700;text-transform:uppercase;">${dowLabel}</div>
+              </div>
+              <div style="flex:1;">
+                <div style="font-size:13px;font-weight:600;">${slotIcon} ${w.isDeload?'Recuperação':w.dayLabel}</div>
+                <div style="font-size:11px;color:var(--text3);">${w.totalVolume.toLocaleString('pt-BR')}m · ${w.durationMin}min · ${w.method.icon} ${w.method.label}</div>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>`;
+          }).join('')}
+        </div>
+      `).join('')}
+      <div style="font-size:10px;color:var(--text3);margin-top:2px;">🎯 = dia de qualidade (usa seu método escolhido) · 🔁 = dia fixo de resistência/técnica · Datas estimadas com base nos ${S.sessionsWeek}× por semana. Toque num treino pra ver os exercícios completos.</div>
+    `;
+  } else {
+    upWrap.innerHTML = '';
+  }
+}
+
+// Mostra o treino completo de qualquer dia futuro, sem mexer no progresso real
+// (semana/dia atuais do plano continuam intocados — é só visualização).
+function previewSession(weekNum, dayNum) {
+  const lvl = LEVELS[S.athleteLevel] || LEVELS.intermediate;
+  const workout = generateWorkout(S.athleteLevel, S.trainingMethod, weekNum, S.poolSize, dayNum, S.sessionsWeek);
+
+  document.getElementById('preview-week-badge').textContent = `Semana ${weekNum} · Dia ${dayNum}`;
+  document.getElementById('preview-title').textContent = `${lvl.planTitle} · ${workout.isDeload ? 'Recuperação' : workout.dayLabel}`;
+  document.getElementById('preview-meta').textContent = `${workout.totalVolume.toLocaleString('pt-BR')}m · ${workout.durationMin} min · Piscina ${S.poolSize}m · ${workout.method.icon} ${workout.method.label}`
+    + (workout.isDeload ? ' · 😌 semana de recuperação' : '');
+
+  const previewSlotMeta = DAY_SLOT_META[workout.daySlotType] || DAY_SLOT_META.aerobico;
+  let previewSlotBox = document.getElementById('preview-slot-explainer');
+  if (!previewSlotBox) {
+    previewSlotBox = document.createElement('div');
+    previewSlotBox.id = 'preview-slot-explainer';
+    previewSlotBox.className = 'info-box';
+    previewSlotBox.style.marginBottom = '14px';
+    document.getElementById('preview-meta').insertAdjacentElement('afterend', previewSlotBox);
+  }
+  const previewSlotNote = workout.daySlotType === 'qualidade'
+    ? `${previewSlotMeta.note} Método deste dia: <strong>${workout.method.icon} ${workout.method.label}</strong>.`
+    : previewSlotMeta.note;
+  previewSlotBox.innerHTML = `
+    <div class="info-box-icon">${workout.daySlotType==='qualidade'?'🎯':workout.daySlotType==='deload'?'😌':'🔁'}</div>
+    <div class="info-box-text"><strong>${previewSlotMeta.tag.replace(/^[^ ]+ /,'')}</strong> — ${previewSlotNote}</div>
+  `;
+
+  document.getElementById('preview-exercise-list').innerHTML = workout.exercises.map(ex=>`
+    <div class="exercise-item">
+      <div style="flex:1;">
+        <div class="ex-name">${ex.name}</div>
+        <div class="ex-detail">${ex.detail}${ex.reps>1?` <span style="color:var(--text3);">(descanso ${ex.restSec}s)</span>`:''}</div>
+        <div style="margin-top:5px;display:flex;gap:6px;flex-wrap:wrap;">
+          <span class="phase-pill" style="background:${ex.pc};color:${ex.pt};">${ex.phase}</span>
+          ${ex.zoneLabel?`<span class="phase-pill" style="background:var(--bg3);color:var(--text2);">${ex.zoneLabel}</span>`:''}
+        </div>
+        <div class="ex-tip">${ex.tip}</div>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('preview-modal').classList.add('open');
+}
+
+function closePreviewModal() {
+  document.getElementById('preview-modal').classList.remove('open');
 }
 
 function completeWorkout(){
@@ -1423,8 +1683,10 @@ function closeCompleteModal(){
 // PLANS
 // ═══════════════════════════════════════════════════════════════
 function renderPlans(){
-  const total=S.totalInPlan||24, done=S.workouts.length;
+  const planWorkouts = S.workouts.filter(w => new Date(w.date) >= new Date(S.planStartedAt));
+  const total=S.totalInPlan||24, done=planWorkouts.length;
   const remaining=Math.max(0,total-done), pct=Math.min(100,Math.round(done/total*100));
+  const planKm=(planWorkouts.reduce((s,w)=>s+(w.volumeM||0),0)/1000).toFixed(1);
   const lvl=LEVELS[S.athleteLevel]||LEVELS.intermediate;
   const method=METHODS[S.trainingMethod]||METHODS.base_aerobica;
   document.getElementById('plan-name').textContent=S.planName||lvl.planTitle+' 8 Semanas';
@@ -1434,7 +1696,7 @@ function renderPlans(){
   document.getElementById('plan-progress-bar').style.width=pct+'%';
   document.getElementById('plan-done-count').textContent=done;
   document.getElementById('plan-remaining-count').textContent=remaining;
-  document.getElementById('plan-km-done').textContent=totalKm()+'km';
+  document.getElementById('plan-km-done').textContent=planKm+'km';
 
   // Método de treino — trocável direto aqui
   const methodOptions = getMethodsForLevel(S.athleteLevel);
@@ -1457,14 +1719,17 @@ function renderPlans(){
       <div style="font-size:13px;font-weight:700;color:var(--text2);margin-bottom:12px;">📈 PROGRESSÃO DE VOLUME</div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">
         ${weeks.map(w=>{
-          const v=generateWorkout(S.athleteLevel, S.trainingMethod, w, S.poolSize).totalVolume;
+          const wk = generateWorkout(S.athleteLevel, S.trainingMethod, w, S.poolSize, 1, S.sessionsWeek);
           const isCurrent=w===S.weekNum;
-          return `<div style="text-align:center;padding:8px 4px;border-radius:8px;background:${isCurrent?lvl.bgColor:'var(--bg3)'};border:${isCurrent?'1.5px solid '+lvl.borderColor:'1px solid transparent'};">
-            <div style="font-size:9px;font-weight:700;color:${isCurrent?lvl.color:'var(--text3)'};margin-bottom:3px;">S${w}</div>
-            <div style="font-size:12px;font-weight:700;color:${isCurrent?lvl.color:'var(--text)'};">${(v/1000).toFixed(1)}k</div>
+          const bg = isCurrent ? lvl.bgColor : (wk.isDeload ? 'var(--teal-light)' : 'var(--bg3)');
+          const fg = isCurrent ? lvl.color : (wk.isDeload ? 'var(--teal)' : 'var(--text3)');
+          return `<div style="text-align:center;padding:8px 4px;border-radius:8px;background:${bg};border:${isCurrent?'1.5px solid '+lvl.borderColor:'1px solid transparent'};">
+            <div style="font-size:9px;font-weight:700;color:${fg};margin-bottom:3px;">S${w}${wk.isDeload?' 😌':''}</div>
+            <div style="font-size:12px;font-weight:700;color:${isCurrent?lvl.color:'var(--text)'};">${(wk.totalVolume/1000).toFixed(1)}k</div>
           </div>`;
         }).join('')}
       </div>
+      <div style="margin-top:8px;font-size:10px;color:var(--text3);">😌 = semana de recuperação (volume e intensidade reduzidos de propósito)</div>
       <div style="margin-top:10px;padding:8px 10px;background:var(--bg3);border-radius:8px;">
         <div style="font-size:11px;color:var(--text2);font-weight:500;">
           ${lvl.description}
@@ -1583,222 +1848,6 @@ function launchConfetti(){
 }
 
 // ═══════════════════════════════════════════════════════════════
-// GARMIN CONNECT INTEGRATION
-// IDs obtidos via engenharia reversa da API não-pública do Garmin
-// ═══════════════════════════════════════════════════════════════
-
-// stepTypeId: 1=warmup, 2=cooldown, 3=interval, 4=active, 5=rest, 6=other, 7=repeat
-const STEP_TYPE = {
-  WARMUP:   { stepTypeId: 1, stepTypeKey: 'warmup' },
-  COOLDOWN: { stepTypeId: 2, stepTypeKey: 'cooldown' },
-  INTERVAL: { stepTypeId: 3, stepTypeKey: 'interval' },
-  ACTIVE:   { stepTypeId: 4, stepTypeKey: 'active' },
-  REST:     { stepTypeId: 5, stepTypeKey: 'rest' },
-  REPEAT:   { stepTypeId: 7, stepTypeKey: 'repeat' },
-};
-
-// swimStrokeTypeId: 0=mixed, 1=freestyle, 2=backstroke, 3=breaststroke, 4=butterfly, 5=drills
-const STROKE_TYPE = {
-  FREESTYLE:    { swimStrokeTypeId: 1, swimStrokeTypeKey: 'freestyle' },
-  BACKSTROKE:   { swimStrokeTypeId: 2, swimStrokeTypeKey: 'backstroke' },
-  BREASTSTROKE: { swimStrokeTypeId: 3, swimStrokeTypeKey: 'breaststroke' },
-  BUTTERFLY:    { swimStrokeTypeId: 4, swimStrokeTypeKey: 'butterfly' },
-  MIXED:        { swimStrokeTypeId: 0, swimStrokeTypeKey: 'mixed' },
-  DRILL:        { swimStrokeTypeId: 5, swimStrokeTypeKey: 'drills' },
-};
-
-// conditionTypeId: 2=time, 3=distance, 4=laps, 6=calories, 7=heart_rate, 10=lap_button
-const END_CONDITION = {
-  DISTANCE: { conditionTypeId: 3, conditionTypeKey: 'distance' },
-  TIME:     { conditionTypeId: 2, conditionTypeKey: 'time' },
-  LAP:      { conditionTypeId: 10, conditionTypeKey: 'lap.button' },
-};
-
-// sportTypeId: 4 = pool_swimming (lap_swimming)
-const SPORT_SWIMMING = { sportTypeId: 4, sportTypeKey: 'swimming' };
-
-function phaseToStepType(phase) {
-  const map = {
-    'Aquecimento': 'WARMUP',
-    'Adaptação':   'WARMUP',
-    'Técnica':     'ACTIVE',
-    'Educativo':   'ACTIVE',
-    'Integração':  'ACTIVE',
-    'Principal':   'INTERVAL',
-    'Velocidade':  'INTERVAL',
-    'Soltura':     'COOLDOWN',
-    'Recuperação': 'REST',
-  };
-  return map[phase] || 'ACTIVE';
-}
-
-function nameToStroke(name) {
-  const n = name.toLowerCase();
-  if (n.includes('costas'))              return 'BACKSTROKE';
-  if (n.includes('peito'))               return 'BREASTSTROKE';
-  if (n.includes('borboleta'))           return 'BUTTERFLY';
-  if (n.includes('medley') || n.includes('misto')) return 'MIXED';
-  if (n.includes('drill') || n.includes('pernada') || n.includes('braçada lateral')) return 'DRILL';
-  return 'FREESTYLE';
-}
-
-// Parse "4 × 50m · 200m total" → {reps, distPerRep}
-function parseDetail(detail) {
-  const repMatch = detail.match(/(\d+)\s*[×x]\s*(\d+)m/);
-  if (repMatch) return { reps: parseInt(repMatch[1]), distPerRep: parseInt(repMatch[2]) };
-  const distMatch = detail.match(/(\d+)m\s*total/);
-  if (distMatch) return { reps: 1, distPerRep: parseInt(distMatch[1]) };
-  return { reps: 1, distPerRep: 100 };
-}
-
-// Build a single executable step (one distance lap)
-function buildExecStep(stepOrder, stepTypeKey, distMeters, strokeKey, description, pool) {
-  return {
-    type:               'ExecutableStepDTO',
-    stepId:             null,
-    stepOrder:          stepOrder,
-    stepType:           STEP_TYPE[stepTypeKey],
-    childStepId:        null,
-    description:        description || '',
-    endCondition:       END_CONDITION.DISTANCE,
-    endConditionValue:  distMeters,
-    preferredEndConditionUnit: { unitId: 2, unitKey: 'm', factor: 1.0 },
-    targetType:         { workoutTargetTypeId: 1, workoutTargetTypeKey: 'no.target' },
-    targetValueOne:     null,
-    targetValueTwo:     null,
-    zoneNumber:         null,
-    secondaryTargetType: null,
-    secondaryTargetValueOne: null,
-    secondaryTargetValueTwo: null,
-    secondaryZoneNumber: null,
-    exerciseCategory:   null,
-    exerciseName:       null,
-    workoutProvider:    null,
-    providerExerciseSourceId: null,
-    weightDisplayUnit:  null,
-    equipmentType:      { equipmentTypeId: 0, equipmentTypeKey: 'none' },
-    swimStroke:         STROKE_TYPE[strokeKey] || STROKE_TYPE.FREESTYLE,
-  };
-}
-
-// Build a rest step (time-based)
-function buildRestStep(stepOrder, restSecs) {
-  return {
-    type:               'ExecutableStepDTO',
-    stepId:             null,
-    stepOrder:          stepOrder,
-    stepType:           STEP_TYPE.REST,
-    childStepId:        null,
-    description:        'Descanso',
-    endCondition:       END_CONDITION.TIME,
-    endConditionValue:  restSecs,
-    preferredEndConditionUnit: { unitId: 2, unitKey: 'second', factor: 1.0 },
-    targetType:         { workoutTargetTypeId: 1, workoutTargetTypeKey: 'no.target' },
-    targetValueOne:     null,
-    targetValueTwo:     null,
-    zoneNumber:         null,
-    secondaryTargetType: null,
-    secondaryTargetValueOne: null,
-    secondaryTargetValueTwo: null,
-    secondaryZoneNumber: null,
-    exerciseCategory:   null,
-    exerciseName:       null,
-    workoutProvider:    null,
-    providerExerciseSourceId: null,
-    weightDisplayUnit:  null,
-    equipmentType:      { equipmentTypeId: 0, equipmentTypeKey: 'none' },
-    swimStroke:         STROKE_TYPE.FREESTYLE,
-  };
-}
-
-// Build Garmin Training API JSON payload — correct format
-function buildGarminWorkout() {
-  const lvl  = LEVELS[S.athleteLevel] || LEVELS.intermediate;
-  const workout = getTodayWorkout();
-  const pool  = S.poolSize || 25;
-  const steps = [];
-  let orderCounter = 1;
-
-  workout.exercises.forEach((ex) => {
-    const { reps, distPerRep } = parseDetail(ex.detail);
-    const stepTypeKey = phaseToStepType(ex.phase);
-    const strokeKey   = nameToStroke(ex.name);
-    const restSecs    = ex.rest || 0;
-
-    if (reps > 1) {
-      // Wrap in RepeatStepDTO when there are multiple repetitions
-      const childSteps = [];
-      let childOrder = 1;
-
-      childSteps.push(buildExecStep(childOrder++, stepTypeKey, distPerRep, strokeKey, ex.tip || ex.name, pool));
-      if (restSecs > 0) {
-        childSteps.push(buildRestStep(childOrder++, restSecs));
-      }
-
-      steps.push({
-        type:               'RepeatGroupDTO',
-        stepId:             null,
-        stepOrder:          orderCounter++,
-        stepType:           STEP_TYPE.REPEAT,
-        childStepId:        1,
-        description:        `${ex.name} — ${reps}×${distPerRep}m`,
-        endCondition:       { conditionTypeId: 7, conditionTypeKey: 'iterations' },
-        endConditionValue:  reps,
-        preferredEndConditionUnit: null,
-        smartRepeat:        false,
-        workoutSteps:       childSteps,
-      });
-    } else {
-      // Single lap — direct ExecutableStepDTO
-      steps.push(buildExecStep(orderCounter++, stepTypeKey, distPerRep, strokeKey, ex.tip || ex.name, pool));
-      if (restSecs > 0) {
-        steps.push(buildRestStep(orderCounter++, restSecs));
-      }
-    }
-  });
-
-  return {
-    workoutId:          null,
-    ownerId:            null,
-    workoutName:        `AquaFlow · ${lvl.planTitle} · Sem ${S.weekNum}`,
-    description:        `Treino AquaFlow para ${S.name} | Nível: ${lvl.label} | Volume: ${workout.totalVolume}m | Piscina: ${pool}m`,
-    updatedDate:        null,
-    createdDate:        null,
-    uploadTimestamp:    null,
-    sportType:          SPORT_SWIMMING,
-    subSportType:       { subSportTypeId: 26, subSportTypeKey: 'lap_swimming' },
-    poolLength:         pool,
-    poolLengthUnit:     { unitId: 2, unitKey: 'm', factor: 1.0 },
-    workoutSegments:    [{
-      segmentOrder:     1,
-      sportType:        SPORT_SWIMMING,
-      workoutSteps:     steps,
-    }],
-    estimatedDurationInSecs:      workout.durationMin * 60,
-    estimatedDistanceInMeters:    workout.totalVolume,
-    estimatedDistanceUnit:        { unitId: 2, unitKey: 'm', factor: 1.0 },
-  };
-}
-
-// Build human-readable manual steps
-function buildManualSteps() {
-  const workout = getTodayWorkout();
-  return workout.exercises.map((ex, i) => {
-    const { reps, distPerRep } = parseDetail(ex.detail);
-    const stroke = nameToStroke(ex.name);
-    const strokePt = { FREESTYLE:'Livre (Crawl)', BACKSTROKE:'Costas', BREASTSTROKE:'Peito', BUTTERFLY:'Borboleta', MIXED:'Medley' }[stroke] || 'Livre';
-    const rest = ex.rest > 0 ? ` · Descanso: ${ex.rest}s` : '';
-    return `<div class="garmin-step">
-      <div class="garmin-step-num">${i+1}</div>
-      <div class="garmin-step-text">
-        <strong>${ex.phase}:</strong> ${ex.name}<br>
-        <span style="color:var(--text3);">${reps}×${distPerRep}m · ${strokePt}${rest}</span>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-// ═══════════════════════════════════════════════════════════════
 // INTERVALS.ICU INTEGRATION
 // API real: chave pessoal (Configurações → Developer Settings),
 // auth HTTP Basic "API_KEY:<chave>", sem precisar de dev program.
@@ -1817,24 +1866,34 @@ function localDateTimeStr(d=new Date()){
 // Ex: "- 200mtr Aquecimento\n\n4x\n- 50mtr Pernada de crawl\n- 30s descanso"
 function buildIntervalsDescription(workout) {
   return workout.exercises.map(ex => {
-    const restLine = ex.rest > 0 ? `\n- ${ex.rest}s descanso` : '';
+    // IMPORTANTE: no formato deles, só vira "cue" (nome exibido no relógio) o texto
+    // que vem ANTES da duração/distância — por isso o nome do exercício e a palavra
+    // "Descanso" precisam vir primeiro, com o número depois (não o contrário).
+    const restLine = ex.rest > 0 ? `\n- Descanso ${ex.rest}s` : '';
     if (ex.reps > 1) {
-      return `${ex.reps}x\n- ${ex.distPerRep}mtr ${ex.name}${restLine}`;
+      return `${ex.reps}x\n- ${ex.name} ${ex.distPerRep}mtr${restLine}`;
     }
-    return `- ${ex.distPerRep}mtr ${ex.name}`;
+    return `- ${ex.name} ${ex.distPerRep}mtr`;
   }).join('\n\n');
 }
 
-function buildIntervalsPayload() {
+// Monta o payload de UMA sessão projetada (usado tanto pra hoje quanto pra dias futuros)
+function buildIntervalsPayloadFor(entry) {
   const lvl = LEVELS[S.athleteLevel] || LEVELS.intermediate;
-  const workout = getTodayWorkout();
   return {
     category: 'WORKOUT',
     type: 'Swim',
-    start_date_local: localDateTimeStr(),
-    name: `AquaFlow · ${lvl.planTitle} · Semana ${S.weekNum}`,
-    description: buildIntervalsDescription(workout),
+    start_date_local: localDateTimeStr(entry.date),
+    name: `AquaFlow · ${lvl.planTitle} · Sem ${entry.weekNum} · ${entry.workout.dayLabel}`,
+    description: buildIntervalsDescription(entry.workout),
   };
+}
+
+let intervalsSendScope = 'today';
+function setIntervalsScope(scope) {
+  intervalsSendScope = scope;
+  document.getElementById('intervals-scope-today').className = 'badge ' + (scope === 'today' ? 'badge-blue' : 'badge-gray');
+  document.getElementById('intervals-scope-week').className = 'badge ' + (scope === 'week' ? 'badge-blue' : 'badge-gray');
 }
 
 async function sendToIntervals() {
@@ -1854,6 +1913,11 @@ async function sendToIntervals() {
   save('intervalsApiKey', key);
   save('intervalsAthleteId', athleteId);
 
+  // "Essa semana" = hoje + o restante dos treinos programados até o fim da semana atual
+  const count = intervalsSendScope === 'week' ? Math.max(1, S.sessionsWeek - S.dayNum + 1) : 1;
+  const sessions = computeUpcomingSessions(count);
+  const payloads = sessions.map(buildIntervalsPayloadFor);
+
   const btn = document.getElementById('intervals-send-btn');
   const originalHtml = btn.innerHTML;
   btn.innerHTML = 'Enviando...';
@@ -1861,18 +1925,21 @@ async function sendToIntervals() {
 
   try {
     const auth = btoa('API_KEY:' + key);
-    const url = `https://intervals.icu/api/v1/athlete/${encodeURIComponent(athleteId)}/events?upsertOnUid=true`;
+    const isBulk = payloads.length > 1;
+    const url = isBulk
+      ? `https://intervals.icu/api/v1/athlete/${encodeURIComponent(athleteId)}/events/bulk?upsertOnUid=true`
+      : `https://intervals.icu/api/v1/athlete/${encodeURIComponent(athleteId)}/events?upsertOnUid=true`;
     const res = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Basic ' + auth,
       },
-      body: JSON.stringify(buildIntervalsPayload()),
+      body: JSON.stringify(isBulk ? payloads : payloads[0]),
     });
 
     if (res.ok) {
-      showToast('✅ Enviado para o intervals.icu!');
+      showToast(isBulk ? `✅ ${payloads.length} treinos enviados!` : '✅ Enviado para o intervals.icu!');
       closeGarminModal();
     } else if (res.status === 401 || res.status === 403) {
       showToast('❌ API Key inválida ou sem permissão');
@@ -1892,51 +1959,20 @@ async function sendToIntervals() {
 }
 
 function openGarminModal() {
-  // Build JSON
-  const payload = buildGarminWorkout();
-  document.getElementById('garmin-json-content').textContent = JSON.stringify(payload, null, 2);
-
-  // Build manual steps
-  document.getElementById('garmin-manual-steps').innerHTML = buildManualSteps();
-
   // Preenche credenciais salvas do intervals.icu
   document.getElementById('intervals-api-key').value = S.intervalsApiKey || '';
   document.getElementById('intervals-athlete-id').value = S.intervalsAthleteId || '0';
 
-  // Reset to intervals.icu tab (caminho recomendado)
-  switchGarminTab(document.getElementById('gtab-intervals'), 'intervals');
+  // Reseta o seletor de escopo (hoje / semana) e mostra quantos treinos restam na semana
+  const remaining = Math.max(1, S.sessionsWeek - S.dayNum + 1);
+  document.getElementById('intervals-scope-week').textContent = `Essa semana (${remaining})`;
+  setIntervalsScope('today');
 
   document.getElementById('garmin-modal').classList.add('open');
 }
 
 function closeGarminModal() {
   document.getElementById('garmin-modal').classList.remove('open');
-}
-
-function switchGarminTab(el, tab) {
-  ['intervals','api','json','manual'].forEach(t => {
-    document.getElementById('garmin-tab-'+t).style.display = t === tab ? 'block' : 'none';
-    document.getElementById('gtab-'+t).classList.toggle('active', t === tab);
-  });
-}
-
-function copyGarminJson(btn) {
-  const txt = document.getElementById('garmin-json-content').textContent;
-  navigator.clipboard.writeText(txt).then(() => {
-    btn.textContent = '✅ Copiado!';
-    setTimeout(() => { btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copiar JSON'; }, 2000);
-  });
-}
-
-function downloadGarminJson() {
-  const lvl = LEVELS[S.athleteLevel] || LEVELS.intermediate;
-  const txt = document.getElementById('garmin-json-content').textContent;
-  const blob = new Blob([txt], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `aquaflow_${lvl.key}_sem${S.weekNum}.json`;
-  a.click();
-  showToast('📥 JSON baixado!');
 }
 
 // ═══════════════════════════════════════════════════════════════
