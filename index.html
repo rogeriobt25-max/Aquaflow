@@ -152,10 +152,10 @@ select.input { cursor: pointer; }
 /* Level badge on home */
 .level-chip { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 700; }
 
-/* ── GARMIN MODAL ── */
-.garmin-btn { background: #1d2b3a; color: #fff; border: none; border-radius: var(--radius-sm); padding: 11px 16px; font-family: inherit; font-weight: 600; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.18s; }
-.garmin-btn:hover { background: #0f1e2d; }
-.garmin-btn:active { transform: scale(0.97); }
+/* ── ENVIO — intervals.icu ── */
+.intervals-send-cta { background: #1d2b3a; color: #fff; border: none; border-radius: var(--radius-sm); padding: 11px 16px; font-family: inherit; font-weight: 600; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.18s; }
+.intervals-send-cta:hover { background: #0f1e2d; }
+.intervals-send-cta:active { transform: scale(0.97); }
 </style>
 </head>
 <body>
@@ -384,7 +384,7 @@ select.input { cursor: pointer; }
       <div style="font-size:12px;color:var(--text2);" id="wo-meta">—</div>
       <div style="margin-top:10px;display:flex;align-items:center;justify-content:space-between;">
         <span style="font-size:12px;color:var(--text2);" id="ex-counter">Carregando…</span>
-        <button class="garmin-btn" onclick="openGarminModal()" style="padding:8px 12px;font-size:12px;">
+        <button class="intervals-send-cta" onclick="openIntervalsModal()" style="padding:8px 12px;font-size:12px;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 16v1a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Enviar ao relógio
         </button>
@@ -567,8 +567,8 @@ select.input { cursor: pointer; }
   </div>
 </div>
 
-<!-- ══ GARMIN MODAL ════════════════════════════════════════════ -->
-<div class="modal-overlay" id="garmin-modal">
+<!-- ══ MODAL DE ENVIO — intervals.icu ════════════════════════════ -->
+<div class="modal-overlay" id="intervals-modal">
   <div class="modal" style="max-height:85vh;overflow-y:auto;">
     <div class="modal-handle"></div>
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
@@ -585,13 +585,66 @@ select.input { cursor: pointer; }
       <div class="info-box-icon">⚡</div>
       <div class="info-box-text">O intervals.icu sincroniza com Garmin, Wahoo, Coros, Suunto, Polar e outros — configure a conexão com seu relógio uma vez lá no site deles, e todo treino enviado por aqui cai automaticamente nele.</div>
     </div>
+
+    <div style="margin-bottom:14px;">
+      <span onclick="toggleIntervalsHelp()" style="font-size:12px;font-weight:700;color:var(--accent);cursor:pointer;display:inline-flex;align-items:center;gap:4px;">
+        🔑 Não tem conta ou não sabe pegar a chave? Veja como <svg id="intervals-help-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg>
+      </span>
+      <div id="intervals-help-steps" style="display:none;margin-top:12px;">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;gap:10px;">
+            <div style="width:20px;height:20px;border-radius:50%;background:var(--accent-light);color:var(--accent);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">1</div>
+            <div style="font-size:12px;color:var(--text2);line-height:1.5;">Crie sua conta (ou faça login, se já tiver) em <a href="https://intervals.icu/login" target="_blank" rel="noopener" style="color:var(--accent);font-weight:600;">intervals.icu/login</a> — é grátis.</div>
+          </div>
+          <div style="display:flex;gap:10px;">
+            <div style="width:20px;height:20px;border-radius:50%;background:var(--accent-light);color:var(--accent);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">2</div>
+            <div style="font-size:12px;color:var(--text2);line-height:1.5;">Já logado, vá em <strong>Configurações (Settings)</strong> e role até o final, na seção <strong>Developer Settings</strong>.</div>
+          </div>
+          <div style="display:flex;gap:10px;">
+            <div style="width:20px;height:20px;border-radius:50%;background:var(--accent-light);color:var(--accent);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">3</div>
+            <div style="font-size:12px;color:var(--text2);line-height:1.5;">Lá aparece a <strong>Chave API</strong>. Se ainda não gerou nenhuma, vai aparecer <strong>"none"</strong> — clique e depois em <strong>"Generate"</strong> pra criar a sua. Depois de gerada, ela fica escondida atrás de <strong>"view"</strong> — clique pra revelar.</div>
+          </div>
+          <div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:2px 0;">
+            <div style="font-size:10px;color:var(--text3);font-weight:700;margin-bottom:8px;">📱 EXEMPLO DE COMO FICA (ilustrativo)</div>
+            <div style="font-size:12px;font-weight:700;color:var(--accent);margin-bottom:8px;">&lt;/&gt; Configurações de Desenvolvedor</div>
+            <div style="display:flex;gap:28px;margin-bottom:10px;">
+              <div>
+                <div style="font-size:10px;color:var(--text3);font-weight:600;margin-bottom:2px;">ID do Atleta</div>
+                <div style="font-size:12px;font-weight:600;color:var(--text);">i123456</div>
+              </div>
+              <div>
+                <div style="font-size:10px;color:var(--text3);font-weight:600;margin-bottom:2px;">Chave API</div>
+                <div style="font-size:12px;font-weight:600;color:var(--text3);">none</div>
+              </div>
+            </div>
+            <div style="font-size:10px;color:var(--text3);margin-bottom:6px;">↓ antes de gerar (1ª vez) · depois de clicar "Generate" ↓</div>
+            <div style="display:flex;gap:28px;">
+              <div>
+                <div style="font-size:10px;color:var(--text3);font-weight:600;margin-bottom:2px;">ID do Atleta</div>
+                <div style="font-size:12px;font-weight:600;color:var(--text);">i123456</div>
+              </div>
+              <div>
+                <div style="font-size:10px;color:var(--text3);font-weight:600;margin-bottom:2px;">Chave API</div>
+                <div style="font-size:12px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:4px;">(view) <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></div>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;">
+            <div style="width:20px;height:20px;border-radius:50%;background:var(--accent-light);color:var(--accent);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">4</div>
+            <div style="font-size:12px;color:var(--text2);line-height:1.5;">Copie a chave que apareceu e cole no campo <strong>"API Key do intervals.icu"</strong> abaixo. O ID do Atleta pode deixar em branco.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="input-wrap">
       <div class="input-label">API Key do intervals.icu</div>
       <input class="input" id="intervals-api-key" type="password" placeholder="Cole sua API Key" autocomplete="off">
     </div>
     <div class="input-wrap">
-      <div class="input-label">Athlete ID (opcional)</div>
-      <input class="input" id="intervals-athlete-id" placeholder="0 = sua própria conta">
+      <div class="input-label">Athlete ID (opcional — deixe em branco)</div>
+      <input class="input" id="intervals-athlete-id" placeholder="Deixe em branco = sua própria conta">
+      <div style="font-size:11px;color:var(--text3);margin-top:2px;line-height:1.5;">Sua API Key já identifica sua conta sozinha — só preencha isso se estiver enviando pra outro atleta que você gerencia. Nesse caso, use o formato com "i" na frente (ex: i297087), visível na URL do perfil dele no intervals.icu.</div>
     </div>
     <div class="input-wrap">
       <div class="input-label">O que enviar</div>
@@ -605,7 +658,7 @@ select.input { cursor: pointer; }
       Pegue sua chave em <strong>intervals.icu → Configurações → Developer Settings</strong>. Ela fica salva só neste dispositivo (localStorage) e é usada apenas para falar direto com a API do intervals.icu — nenhum servidor intermediário.
     </div>
 
-    <button class="btn btn-outline btn-block" onclick="closeGarminModal()" style="margin-top:14px;">Fechar</button>
+    <button class="btn btn-outline btn-block" onclick="closeIntervalsModal()" style="margin-top:14px;">Fechar</button>
   </div>
 </div>
 
@@ -1940,7 +1993,7 @@ async function sendToIntervals() {
 
     if (res.ok) {
       showToast(isBulk ? `✅ ${payloads.length} treinos enviados!` : '✅ Enviado para o intervals.icu!');
-      closeGarminModal();
+      closeIntervalsModal();
     } else if (res.status === 401 || res.status === 403) {
       showToast('❌ API Key inválida ou sem permissão');
     } else {
@@ -1958,21 +2011,39 @@ async function sendToIntervals() {
   }
 }
 
-function openGarminModal() {
-  // Preenche credenciais salvas do intervals.icu
+function toggleIntervalsHelp() {
+  const steps = document.getElementById('intervals-help-steps');
+  const chevron = document.getElementById('intervals-help-chevron');
+  const isOpen = steps.style.display !== 'none';
+  steps.style.display = isOpen ? 'none' : 'block';
+  chevron.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+}
+
+function openIntervalsModal() {
+  // Preenche credenciais salvas do intervals.icu.
+  // Athlete ID fica em branco por padrão (= própria conta via API key);
+  // só mostra algo aqui se a pessoa já tiver preenchido um ID de terceiro antes.
   document.getElementById('intervals-api-key').value = S.intervalsApiKey || '';
-  document.getElementById('intervals-athlete-id').value = S.intervalsAthleteId || '0';
+  document.getElementById('intervals-athlete-id').value = (S.intervalsAthleteId && S.intervalsAthleteId !== '0') ? S.intervalsAthleteId : '';
+
+  // Passo a passo: abre automático pra quem ainda não tem chave salva (1ª vez),
+  // e fica fechado por padrão pra quem já usa — sem repetir o óbvio pra quem já sabe.
+  const helpSteps = document.getElementById('intervals-help-steps');
+  const helpChevron = document.getElementById('intervals-help-chevron');
+  const firstTime = !S.intervalsApiKey;
+  helpSteps.style.display = firstTime ? 'block' : 'none';
+  helpChevron.style.transform = firstTime ? 'rotate(180deg)' : 'rotate(0deg)';
 
   // Reseta o seletor de escopo (hoje / semana) e mostra quantos treinos restam na semana
   const remaining = Math.max(1, S.sessionsWeek - S.dayNum + 1);
   document.getElementById('intervals-scope-week').textContent = `Essa semana (${remaining})`;
   setIntervalsScope('today');
 
-  document.getElementById('garmin-modal').classList.add('open');
+  document.getElementById('intervals-modal').classList.add('open');
 }
 
-function closeGarminModal() {
-  document.getElementById('garmin-modal').classList.remove('open');
+function closeIntervalsModal() {
+  document.getElementById('intervals-modal').classList.remove('open');
 }
 
 // ═══════════════════════════════════════════════════════════════
